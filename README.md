@@ -22,7 +22,7 @@ A full-featured event management system built to simplify event planning, ticket
 
 ### 🎟️ RSVP & Ticketing
 - RSVP for free events
-- Ticket sales with tier support (e.g., VIP, General)
+- Ticket sales
 - Set ticket quantity limits
 - QR code generation for check-in
 - Payment integration (Stripe, PayPal, Mpesa)
@@ -42,7 +42,7 @@ A full-featured event management system built to simplify event planning, ticket
 - Moderate event content
 
 ### 🔔 Notifications & Reminders
-- Automated event reminders (email/SMS)
+- Automated event reminders (email)
 - Post-event feedback or thank-you messages
 
 ### ⭐ Feedback & Ratings
@@ -53,20 +53,13 @@ A full-featured event management system built to simplify event planning, ticket
 
 ## 🛠 Tech Stack (Suggested)
 - Backend: Spring Boot (Java)
-- Frontend: React or Angular (optional)
-- Database: PostgreSQL / MySQL
+- Frontend: Not yet stated
+- Database: PostgreSQL
 - Authentication: JWT
 - Payment APIs: Stripe, PayPal, Mpesa
 
 ---
 
-## 📌 Getting Started
-1. Clone the repository
-2. Set up your database and `.env` variables
-3. Run the backend server with `./mvnw spring-boot:run`
-4. (Optional) Start the frontend
-
----
 
 ## 📃 License
 This project is open-source and available under the MIT License.
