@@ -1,84 +1,88 @@
 package com.eventhub.events.repository;
 
-import com.eventhub.events.model.Events;
-
-
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.ArrayList;
+import java.time.LocalDateTime;
 
+import com.eventhub.events.model.Events;
 import org.springframework.stereotype.Repository;
+
+import javax.sql.DataSource;
 
 @Repository
 public class EventsRepository {
+    private final DataSource dataSource;
+    private static final Logger logger = LoggerFactory.getLogger(EventsRepository.class);
 
-    private final String JDBC_URL = "jdbc:postgresql://localhost:5432/database-name";
-    private final String JDBC_USER = "postgres";
-    private final String JDBC_PASSWORD = "postgres";
+    public EventsRepository(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     public Events findById(String eventId) {
         String sql = "SELECT * FROM events WHERE eventId = ?";
-        try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = dataSource.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, eventId);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return new Events(
-//                            rs.getString("eventId"),
-//                            rs.getString("eventName"),
-//                            rs.getString("eventOrganizer"),
-//                            rs.getTimestamp("eventDuration").toLocalDateTime()
-                    );
+                    return mapRow(rs);
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace(); // Replace with logger in production
+            logger.error("Error fetching event with ID: {}", eventId, e);
         }
         return null;
     }
 
     public List<Events> findAll() {
-        List<Events> events = new ArrayList<>();
         String sql = "SELECT * FROM events";
-        try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        List<Events> events = new ArrayList<>();
+        try(Connection conn = dataSource.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                events.add(new Event(
-//                        rs.getString("eventId"),
-//                        rs.getString("eventName"),
-//                        rs.getString("eventOrganizer"),
-//                        rs.getTimestamp("eventDuration").toLocalDateTime()
-                ));
+                events.addRow(mapRow(rs));
             }
         } catch (SQLException e) {
-            e.printStackTrace(); // Replace with logger in production
+            logger.error("Error fetching all events!", e);
         }
         return events;
     }
 
-    public Events createEvent(Events event) {
-        String sql = "INSERT INTO events (eventName, eventOrganizer, duration) VALUES (?, ?, ?)";
-        try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+    public Events createEvent(Events events) {
+        String sql = "INSERT INTO events (eventName, eventOrganizer, eventDuration) VALUES (?, ?, ?) RETURNING eventId";
+        try (Connection conn = dataSource.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, event.getEventName());
-            stmt.setString(2, event.getEventOrganizer());
-            stmt.setTimestamp(3, Timestamp.valueOf(event.getEventDuration()));
-            stmt.executeUpdate();
+            stmt.setString(1, events.getEventName());
+            stmt.setString(2, events.getEventOrganizer());
+            stmt.setString(3, events.getEventId());
 
-            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    event.setEventId(generatedKeys.getString(1));
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String.generatedId = rs.getString("eventId");
+                    events.setEventId(generatedId);
+                    logger.info("Created event with ID: {}", events.getEventId());
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace(); // Replace with logger in production
+            logger.error("Error creating event with ID: {}", events, e);
         }
-        return event;
+        return events;
+    }
+
+    private Events mapRow(ResultSet rs) throws SQLException {
+        return new Events(
+//                rs.getString("eventId"),
+//                rs.getString("eventName"),
+//                rs.getString("eventOrganizer"),
+//                rs.getTimestamp("eventDuration").toLocalDateTime()
+        );
     }
 
 }
