@@ -6,7 +6,8 @@ import org.slf4j.Logger;
 import javax.sql.DataSource;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
-import java.time.LocalDateTime;
+
+import com.eventhub.events.utils.UniqueIdGenerator;
 
 import com.eventhub.events.model.Users;
 import org.springframework.stereotype.Repository;
@@ -33,7 +34,8 @@ public class UsersRepository {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    String.generatedId = rs.getString("userId");
+//                    String.generatedId = rs.getString("userId");
+                    String generatedId = UniqueIdGenerator.generateUniqueId();
                     users.setUserId(generatedId);
                     logger.info("Created user with ID: {}", users.getUserId());
                 }
