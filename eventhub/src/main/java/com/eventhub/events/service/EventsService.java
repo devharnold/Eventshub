@@ -24,7 +24,7 @@ public class EventsService {
         return eventsRepository.findAll();
     }
 
-    public Events createEvent(Events events) {
-        return eventsRepository.createEvent(events);
+    public void createEvent(Events events) {
+        eventsRepository.createEvent(events);
     }
 }

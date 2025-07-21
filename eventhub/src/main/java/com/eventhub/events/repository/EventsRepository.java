@@ -5,7 +5,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
-import java.time.LocalDateTime;
+
+import com.eventhub.events.utils.UniqueIdGenerator;
 
 import com.eventhub.events.model.Events;
 import org.springframework.stereotype.Repository;
@@ -65,7 +66,8 @@ public class EventsRepository {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    String.generatedId = rs.getString("eventId");
+                    //String.generatedId = rs.getString("eventId");
+                    String generatedId = UniqueIdGenerator.generateUniqueId();
                     events.setEventId(generatedId);
                     logger.info("Created event with ID: {}", events.getEventId());
                 }
