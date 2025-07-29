@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public class Users {
     private String userId;
     private String email;
+    private String username;
     private String firstName;
     private String lastName;
     private String phoneNumber;
@@ -22,6 +23,9 @@ public class Users {
 
     public String getEmail() { return this.email; }
     public void setEmail(String email) { this.email = email; }
+
+    public String getUsername() { return this.username; }
+    public void setUsername(String username) { this.username = username; }
 
     public String getFirstName() { return this.firstName; }
     public void setFirstName(String firstName) { this.firstName = firstName; }

@@ -105,7 +105,7 @@ public class EventsDaoImpl implements EventsDao {
         List<Events> events = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
             PreparedStatement stmt = conn.prepareStatement(query);
-            ResultSet rs = stmt.executeQuery()) {
+            ResultSet rs = stmt.executeQuery(query)) {
 
             while (rs.next()) {
                 events.add(mapRow(rs));
