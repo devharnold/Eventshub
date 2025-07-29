@@ -79,8 +79,6 @@ public class UsersDaoImpl implements UsersDao {
         try (Connection conn = dataSource.getConnection();
             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setString(1, username);
-            
             try (ResultSet rs = stmt.executeQuery()) {
                 while(rs.next()) {
                     users.add(mapRow(rs));

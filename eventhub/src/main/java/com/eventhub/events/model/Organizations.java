@@ -8,9 +8,11 @@ public class Organizations {
     private String email1;
     private String email2;
     private String contactInfo;
+    private LocalDateTime createdAt;
+    private String password;
 
     public Organizations() {
-        this.organizationId = "";
+        this.createdAt = LocalDateTime.now();
     }
 
     // Getters and Setters
@@ -28,6 +30,12 @@ public class Organizations {
 
     public String getContactInfo() { return contactInfo; }
     public void setContactInfo(String contactInfo) { this.contactInfo = contactInfo; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
 
 }
