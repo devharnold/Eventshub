@@ -5,6 +5,12 @@ Refactor the `Events` module for better structure and add support for advanced e
 
 ---
 
+## TODO
+-- [] Handle user, events entities inside the barcode
+-- [] 
+
+---
+
 ## ✅ Completed
 - [ ] Initial project structure
 - [ ] Basic Events CRUD with JDBC
