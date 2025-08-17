@@ -4,17 +4,15 @@ import java.util.List;
 
 import com.eventhub.events.dao.UsersDao;
 import com.eventhub.events.model.Users;
-import com.eventhub.events.dao.impl.UsersDaoImpl;
 import org.springframework.stereotype.Service;
 
 
 @Service
 public class UsersService {
-    //private final UsersRepository usersRepository;
     private final UsersDao usersDao;
 
-    public UsersService() {
-        this.usersDao = new UsersDaoImpl();
+    public UsersService(UsersDao usersDao) {
+        this.usersDao = usersDao;
     }
 
     public void createNewUser(Users users) {

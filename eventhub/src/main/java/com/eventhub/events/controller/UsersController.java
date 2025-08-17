@@ -2,6 +2,7 @@ package com.eventhub.events.controller;
 
 import java.util.List;
 
+import com.eventhub.events.dao.UsersDao;
 import com.eventhub.events.model.Users;
 import com.eventhub.events.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.eventhub.events.repository.UsersRepository;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 public class UsersController {
     private final UsersService usersService;
 
     @Autowired
-    public UsersController(UsersRepository usersRepository) {
-        this.usersService = new UsersService(usersRepository);
+    public UsersController(UsersDao usersDao) {
+        this.usersService = new UsersService(usersDao);
     }
 
     @PostMapping("/users/create_profile")

@@ -10,16 +10,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.eventhub.events.repository.OrganizationsRepository;
+import com.eventhub.events.dao.OrganizationsDao;
 
 @RestController
-@RequestMapping("/api/organizations")
+@RequestMapping("/api/v1/organizations")
 public class OrganizationsController {
     private final OrganizationsService organizationsService;
 
     @Autowired
-    public OrganizationsController(OrganizationsRepository organizationsRepository) {
-        this.organizationsService = new OrganizationsService(organizationsRepository);
+    public OrganizationsController(OrganizationsDao organizationsDao) {
+        this.organizationsService = new OrganizationsService(organizationsDao);
     }
 
     @PostMapping("/organizations/new-organization")

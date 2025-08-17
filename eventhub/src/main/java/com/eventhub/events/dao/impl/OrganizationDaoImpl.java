@@ -92,7 +92,13 @@ public class OrganizationDaoImpl implements OrganizationsDao {
     }
 
     private Organizations mapRow(ResultSet rs) throws SQLException {
-        return new Organizations();
+        Organizations organizations = new Organizations();
+        organizations.setOrganizationId(rs.getString("organizationId"));
+        organizations.setOrganizationName(rs.getString("organizationName"));
+        organizations.setContactInfo(rs.getString("contactInfo"));
+        organizations.setEmail1(rs.getString("email1"));
+        organizations.setEmail2(rs.getString("email2"));
+        return organizations;
     }
 
 }
