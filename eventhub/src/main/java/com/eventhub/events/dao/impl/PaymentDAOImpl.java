@@ -82,7 +82,7 @@ public class PaymentDAOImpl implements PaymentDao {
             }
 
         } catch (SQLException e) {
-            logger.error("❌ Error fetching payment by transactionId {}", transactionId, e);
+            logger.error("Error fetching payment by transactionId {}", transactionId, e);
         }
         return null;
     }
@@ -101,7 +101,7 @@ public class PaymentDAOImpl implements PaymentDao {
             }
 
         } catch (SQLException e) {
-            logger.error("❌ Error fetching all payments", e);
+            logger.error("Error fetching all payments", e);
         }
 
         return payments;
