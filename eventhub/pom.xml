@@ -68,6 +68,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jdbc</artifactId>
         </dependency>
+
+        <!-- Mpesa Java SDK -->
+        <dependency>
+            <groupId>Mpesa</groupId>
+            <artifactId>Mpesa</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

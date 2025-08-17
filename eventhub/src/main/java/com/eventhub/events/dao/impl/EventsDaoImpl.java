@@ -116,7 +116,32 @@ public class EventsDaoImpl implements EventsDao {
         return events;
     }
 
+    @Override
+    public Events findById(String eventId) {
+        String query = "SELECT * FROM events WHERE eventId = ?";
+        try (Connection conn = dataSource.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, eventId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapRow(rs);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error while trying to search for an event by its ID: {}", eventId, e);
+        }
+        return null;
+    }
+
     private Events mapRow(ResultSet rs) throws SQLException {
+        Events events = new Events();
+        events.setEventId(rs.getString("eventId"));
+        events.setEventName(rs.getString("eventName"));
+        events.setEventOrganizer(rs.getString("eventOrganizer"));
+        events.setEventLocation(rs.getString("eventLocation"));
+        events.setEventDate(rs.getDate("eventDate").toLocalDate());
+        events.setPrice(rs.getDouble("eventPrice"));
         return new Events();
     }
 }

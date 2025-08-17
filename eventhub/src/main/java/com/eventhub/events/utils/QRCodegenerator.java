@@ -3,6 +3,7 @@ package com.eventhub.events.utils;
 import io.nayuki.qrcodegen.QrCode;
 import java.awt.image.BufferedImage;
 import java.util.Objects;
+import java.time.LocalDateTime;
 
 // TODO: Feed in some data in the Barcode, eg; username, event name,
 
@@ -15,12 +16,12 @@ public class QRCodegenerator {
      * @param eventDate: date of the event
      * @return A buffered image of the generated QR code
      */
-    public static BufferedImage generateTicketQRCode (String username, String eventName, String organizationName, String eventDate) throws Exception {
+    public static BufferedImage generateTicketQRCode (String username, String eventName, String organizationName, LocalDateTime eventDate) throws Exception {
         String qrContent = buildQRContent(username, eventName, organizationName, eventDate);
         return generateQRCode(qrContent);
     }
 
-    public static String buildQRContent(String username, String eventName, String organizationName, String eventDate) throws Exception {
+    public static String buildQRContent(String username, String eventName, String organizationName, LocalDateTime eventDate) throws Exception {
         return String.format("User: %s\nEvent: %s\nOrganization: %s\nDate: %s\n", username, eventName, organizationName, eventDate);
     }
 

@@ -10,6 +10,7 @@ public class Events {
     private String Location;
     private LocalDate eventDate;
     private String eventDuration;
+    private Double price;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
 
@@ -34,6 +35,9 @@ public class Events {
 
     public LocalDate getEventDate() { return eventDate; }
     public void setEventDate( LocalDate eventDate ) { this.eventDate = eventDate; }
+
+    public Double getPrice() { return price; }
+    public void setPrice(Double price) { this.price = price; }
 
     public String getEventDuration() { return eventDuration; }
     public void setEventDuration(String eventDuration) { this.eventDuration = eventDuration; }
