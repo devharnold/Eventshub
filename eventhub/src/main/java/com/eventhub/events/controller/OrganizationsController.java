@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.eventhub.events.dao.OrganizationsDao;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/organizations")
@@ -32,5 +33,10 @@ public class OrganizationsController {
     public ResponseEntity<Organizations> getOrganizationByName(@PathVariable String organizationName) {
         Organizations organizations = organizationsService.findOrganizationByName(organizationName);
         return (organizations != null) ? ResponseEntity.ok(organizations) : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/organizations/list-organizations")
+    public ResponseEntity<List<Organizations>> listOrganizations() {
+        return ResponseEntity.ok(organizationsService.findAllOrganizations());
     }
 }

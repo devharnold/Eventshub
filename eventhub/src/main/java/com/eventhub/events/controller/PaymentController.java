@@ -15,6 +15,7 @@ public class PaymentController {
         this.paymentService = paymentService;
     }
 
+    // Confirms Mpesa Payments
     @PostMapping("/mpesa/confirmation")
     public String receiveConfirmation(@RequestBody Map<String, Object> payload) {
         paymentService.processConfirmation(payload);
