@@ -8,4 +8,5 @@ public interface UsersDao {
     Users createUserProfile(Users users);
     Users findByName(String name);
     List<Users> findAll();
+    //Users login(String userId);
 }
