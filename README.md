@@ -27,25 +27,17 @@ A full-featured event management system built to simplify event planning, ticket
 - QR code generation for check-in
 - Payment integration (Stripe, PayPal, Mpesa)
 
-### 📣 Promotion Tools
-- Share event via social media
-- Email and SMS invites or updates
-
 ### ✅ Attendance Tracking
 - Check-in via QR/barcode
 - Manual check-in support
 - Real-time attendee stats
 
-### 📊 Admin Dashboard
-- Monitor ticket sales and attendee counts
-- Manage users and events
-- Moderate event content
+## ⏳ Work in Progress (Final Features)
+- **🔔 Notifications & Reminders**
+    - Automated event reminders (email/SMS)
+    - Post-event feedback or thank-you messages
 
-### 🔔 Notifications & Reminders
-- Automated event reminders (email)
-- Post-event feedback or thank-you messages
-
-### ⭐ Feedback & Ratings
+- **⭐ Feedback & Ratings**
 - Allow attendees to review events
 - Collect post-event feedback
 
@@ -56,7 +48,7 @@ A full-featured event management system built to simplify event planning, ticket
 - Frontend: Not yet stated
 - Database: PostgreSQL
 - Authentication: JWT
-- Payment APIs: Stripe, PayPal, Mpesa
+- Payment APIs: Mpesa
 
 ---
 
