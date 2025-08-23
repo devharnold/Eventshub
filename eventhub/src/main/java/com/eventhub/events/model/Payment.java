@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class Payment {
 
-    private Integer paymentId;
+    private String paymentId;
     private String transactionId;
     private String amount;
     private String phone;
@@ -15,8 +15,8 @@ public class Payment {
         this.createdAt = LocalDateTime.now();
     }
 
-    public int getPaymentId() { return paymentId;}
-    public void setPaymentId(int paymentId) { this.paymentId = paymentId;}
+    public String getPaymentId() { return paymentId;}
+    public void setPaymentId(String paymentId) { this.paymentId = paymentId;}
 
     public String getTransactionId() { return transactionId;}
     public void setTransactionId(String transactionId) { this.transactionId = transactionId;}

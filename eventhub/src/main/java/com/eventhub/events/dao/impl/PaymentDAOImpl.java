@@ -16,7 +16,7 @@ public class PaymentDAOImpl implements PaymentDao {
     private final DataSource dataSource;
     private final Logger logger = LoggerFactory.getLogger(PaymentDAOImpl.class);
 
-    public  PaymentDAOImpl(DataSource dataSource) {
+    public PaymentDAOImpl(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -29,13 +29,13 @@ public class PaymentDAOImpl implements PaymentDao {
         }
 
         try (Connection conn = dataSource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, payment.getTransactionId());
             stmt.setString(2, payment.getAmount());
             stmt.setString(3, payment.getPhone());
             stmt.setString(4, payment.getReference());
-            stmt.setTimeStamp(5, Timestamp.valueOf(payment.getCreatedAt()));
+            stmt.setTimestamp(5, Timestamp.valueOf(payment.getCreatedAt()));
 
             int rows = stmt.executeUpdate();
             if (rows > 0) {
@@ -46,25 +46,6 @@ public class PaymentDAOImpl implements PaymentDao {
         } catch (SQLException e) {
             logger.error("Error saving payment {}", payment.getTransactionId(), e);
         }
-    }
-
-    @Override
-    public Payment findByTransactionId(String transactionId) {
-        String sql = "SELECT * FROM payment WHERE transaction_id = ?";
-        try (Connection conn = dataSource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, transactionId);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return mapRow(rs);
-                }
-            }
-        } catch (SQLException e) {
-            logger.error("Error getting payment by transactionId {}", transactionId, e);
-        }
-        return null;
     }
 
     @Override
@@ -80,7 +61,6 @@ public class PaymentDAOImpl implements PaymentDao {
                     return mapRow(rs);
                 }
             }
-
         } catch (SQLException e) {
             logger.error("Error fetching payment by transactionId {}", transactionId, e);
         }
@@ -99,7 +79,6 @@ public class PaymentDAOImpl implements PaymentDao {
             while (rs.next()) {
                 payments.add(mapRow(rs));
             }
-
         } catch (SQLException e) {
             logger.error("Error fetching all payments", e);
         }
@@ -109,9 +88,9 @@ public class PaymentDAOImpl implements PaymentDao {
 
     private Payment mapRow(ResultSet rs) throws SQLException {
         Payment payment = new Payment();
-        payment.setId(rs.getLong("id"));
-        payment.setTransactionId(rs.getString("transaction_id"));
-        payment.setAmount(rs.getString("amount"));
+        payment.setPaymentId(rs.getString("paymentId"));  // id as String
+        payment.setTransactionId(rs.getString("transactionId"));
+        payment.setAmount(rs.getString("amount"));  // amount as String
         payment.setPhone(rs.getString("phone"));
         payment.setReference(rs.getString("reference"));
         payment.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
