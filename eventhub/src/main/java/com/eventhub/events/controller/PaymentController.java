@@ -3,6 +3,7 @@ package com.eventhub.events.controller;
 import com.eventhub.events.service.PaymentService;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.*;
 
 @RestController
@@ -13,6 +14,15 @@ public class PaymentController {
 
     public PaymentController(PaymentService paymentService) {
         this.paymentService = paymentService;
+    }
+
+    // Initiate STK Push
+    @PostMapping("/mpesa/initiate")
+    public String initiatePayment(
+            @RequestParam String phoneNumber,
+            @RequestParam String amount,
+            @RequestParam String accountRef) throws IOException {
+        return paymentService.initiateSTKPush(phoneNumber, amount, accountRef);
     }
 
     // Confirms Mpesa Payments
