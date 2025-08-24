@@ -1,3 +1,5 @@
+/home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/controller/OrgAuthController.java
+/home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/service/OrgAuthService.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/service/UsersService.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/model/BookingRequest.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/controller/TicketController.java
@@ -13,9 +15,11 @@
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/model/Users.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/utils/TicketNumberGen.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/controller/BookingController.java
+/home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/utils/JwtUtil.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/dao/UsersDao.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/utils/PasswordHash.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/controller/OrganizationsController.java
+/home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/service/AuthService.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/service/PaymentService.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/model/Ticket.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/model/Events.java
@@ -26,11 +30,14 @@
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/EventsApplication.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/dao/impl/OrganizationDaoImpl.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/service/EventsService.java
+/home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/controller/UserAuthController.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/controller/UsersController.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/service/TicketService.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/utils/UniqueIdGenerator.java
+/home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/service/PaymentFailedException.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/model/Booking.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/dao/PaymentDao.java
-/home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/model/Notifications.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/dao/impl/TicketDaoImpl.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/dao/impl/UsersDaoImpl.java
+/home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/security/JwtRequestFilter.java
+/home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/utils/OrgJwtUtil.java

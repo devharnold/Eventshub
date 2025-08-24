@@ -4,11 +4,9 @@ import com.eventhub.events.utils.QRCodegenerator;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
-
-// TODO:
+import java.util.Base64;
 
 public class Ticket {
     private String ticketNumber;
@@ -16,13 +14,14 @@ public class Ticket {
     private String eventName;
     private String organizationName;
     private LocalDateTime eventDate;
-    private byte[] qrCode; // Store QR code as bytes for DB storage
+    private byte[] qrCode; // Store as raw bytes
 
     public Ticket() {
         // No-arg constructor for frameworks (JDBC, JSON mappers, etc.)
     }
 
-    public Ticket(String ticketNumber, String username, String eventName, String organizationName, LocalDateTime eventDate) throws Exception {
+    public Ticket(String ticketNumber, String username, String eventName,
+                  String organizationName, LocalDateTime eventDate) throws Exception {
         this.ticketNumber = ticketNumber;
         this.username = username;
         this.eventName = eventName;
@@ -31,8 +30,9 @@ public class Ticket {
         setQrCodeFromDetails(username, eventName, organizationName, eventDate);
     }
 
-    // Generate QR code from ticket details and store as byte[]
-    public void setQrCodeFromDetails(String username, String eventName, String organizationName, LocalDateTime eventDate) throws Exception {
+    // Generate QR code and store as byte[]
+    public void setQrCodeFromDetails(String username, String eventName,
+                                     String organizationName, LocalDateTime eventDate) throws Exception {
         BufferedImage qrImage = QRCodegenerator.generateTicketQRCode(username, eventName, organizationName, eventDate);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(qrImage, "png", baos);
@@ -55,6 +55,11 @@ public class Ticket {
     public LocalDateTime getEventDate() { return eventDate; }
     public void setEventDate(LocalDateTime eventDate) { this.eventDate = eventDate; }
 
-    public RenderedImage getQrCode() { return qrCode; }
+    // ✅ return QR code as Base64 (for DTO / JSON response)
+    public String getQrCodeBase64() {
+        return qrCode != null ? Base64.getEncoder().encodeToString(qrCode) : null;
+    }
+
+    public byte[] getQrCode() { return qrCode; }
     public void setQrCode(byte[] qrCode) { this.qrCode = qrCode; }
 }

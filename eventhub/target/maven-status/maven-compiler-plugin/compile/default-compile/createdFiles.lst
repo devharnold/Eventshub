@@ -1,0 +1,6 @@
+com/eventhub/events/controller/OrgAuthController.class
+com/eventhub/events/dao/OrganizationsDao.class
+com/eventhub/events/model/Organizations.class
+com/eventhub/events/model/BookingRequest.class
+com/eventhub/events/utils/OrgJwtUtil.class
+com/eventhub/events/service/OrgAuthService.class

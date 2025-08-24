@@ -3,7 +3,6 @@ package com.eventhub.events.service;
 import com.eventhub.events.model.Ticket;
 import com.eventhub.events.dao.TicketDao;
 import com.eventhub.events.model.BookingRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
