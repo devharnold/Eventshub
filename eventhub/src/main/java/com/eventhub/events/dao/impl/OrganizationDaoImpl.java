@@ -23,24 +23,24 @@ public class OrganizationDaoImpl implements OrganizationsDao {
     }
 
     @Override
-    public Organizations createOrganizationProfile(Organizations organizations) {
+    public Organizations createOrganizationProfile(Organizations organization) {
         String insert_query = "INSERT INTO organizations (organizationId, organizationName, email1, email2, contactInfo)" + "VALUES (?, ?, ?, ?, ?)";
         String generatedId = UniqueIdGenerator.generateUniqueId();
-        organizations.setOrganizationId(generatedId);
+        organization.setOrganizationId(generatedId);
 
-        String plainPassword = organizations.getPassword();
+        String plainPassword = organization.getPassword();
         String hashedPassword = PasswordHash.hashPassword(plainPassword);
-        organizations.setPassword(hashedPassword);
+        organization.setPassword(hashedPassword);
 
         try (Connection conn = dataSource.getConnection();
             PreparedStatement stmt = conn.prepareStatement(insert_query)) {
 
-            stmt.setString(1, organizations.getOrganizationId());
-            stmt.setString(2, organizations.getOrganizationName());
-            stmt.setString(3, organizations.getEmail1());
-            stmt.setString(4, organizations.getEmail2());
-            stmt.setString(5, organizations.getContactInfo());
-            stmt.setString(6, organizations.getPassword());
+            stmt.setString(1, organization.getOrganizationId());
+            stmt.setString(2, organization.getOrganizationName());
+            stmt.setString(3, organization.getEmail1());
+            stmt.setString(4, organization.getEmail2());
+            stmt.setString(5, organization.getContactInfo());
+            stmt.setString(6, organization.getPassword());
 
             int rowsInserted = stmt.executeUpdate(insert_query);
             if  (rowsInserted > 0) {
@@ -51,7 +51,7 @@ public class OrganizationDaoImpl implements OrganizationsDao {
         } catch (SQLException e) {
             logger.error("Error while trying to create organization profile!", e);
         }
-        return organizations;
+        return organization;
     }
 
     @Override

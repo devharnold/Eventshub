@@ -37,7 +37,7 @@ public class TicketController {
                     try {
                         if (ticket.getQrCode() != null) {
                             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                            ImageIO.write(ticket.getQrCode(), "png", baos);
+                            ImageIO.write(ticket.getQrCode(), "png", baos)
                             qrCodeBase64 = Base64.getEncoder().encodeToString(baos.toByteArray());
                         }
                     } catch (IOException e) {

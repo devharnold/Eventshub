@@ -28,7 +28,7 @@ public class EventsService {
         return eventsDao.findAll();
     }
 
-    public List<Events> getAllEventsByDateAndLocation(String eventDate, String Location, int  limit, int offset) {
+    public List<Events> getAllEventsByDateAndLocation(String eventDate, String Location) {
         return eventsDao.findByDateAndLocation(eventDate, Location, limit, offset);
     }
 
