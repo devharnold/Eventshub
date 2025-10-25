@@ -16,8 +16,8 @@ public class OrganizationsService {
         this.organizationsDao = organizationsDao;
     }
 
-    public void createOrganization(Organizations organizations) {
-        organizationsDao.createOrganizationProfile(organizations);
+    public void createOrganization(Organizations organization) {
+        organizationsDao.createOrganizationProfile(organization);
     }
 
     public Organizations findOrganizationByName(String organizationName) {

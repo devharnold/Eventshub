@@ -7,12 +7,7 @@ import com.eventhub.events.model.Events;
 import com.eventhub.events.service.EventsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/events")
@@ -31,7 +26,12 @@ public class EventsController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Events>> getAllEvents() {
+    public ResponseEntity<List<Events>> getEvents(
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) String eventDate) {
+        if (location != null && eventDate != null) {
+            return ResponseEntity.ok(eventsService.getAllEventsByDateAndLocation(location, eventDate));
+        }
         return ResponseEntity.ok(eventsService.getAllEvents());
     }
 

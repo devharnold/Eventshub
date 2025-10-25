@@ -24,18 +24,21 @@ public class OrganizationsController {
     }
 
     @PostMapping("/organizations/new-organization")
-    public ResponseEntity<Organizations> createOrganization (@RequestBody Organizations organizations) {
-        organizationsService.createOrganization(organizations);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Organizations> createOrganization (@RequestBody Organizations organization) {
+        Organizations created = organizationsService.createOrganization(organization);
+        return ResponseEntity.ok(created);
     }
 
-    @GetMapping("/organization/find-organization")
+
+    @GetMapping("/{organizationName}")
     public ResponseEntity<Organizations> getOrganizationByName(@PathVariable String organizationName) {
-        Organizations organizations = organizationsService.findOrganizationByName(organizationName);
-        return (organizations != null) ? ResponseEntity.ok(organizations) : ResponseEntity.notFound().build();
+        Organizations organization = organizationsService.findOrganizationByName(organizationName);
+        return (organization != null)
+                ? ResponseEntity.ok(organization)
+                : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/organizations/list-organizations")
+    @GetMapping
     public ResponseEntity<List<Organizations>> listOrganizations() {
         return ResponseEntity.ok(organizationsService.findAllOrganizations());
     }
