@@ -29,7 +29,7 @@ public class EventsService {
     }
 
     public List<Events> getAllEventsByDateAndLocation(String eventDate, String Location) {
-        return eventsDao.findByDateAndLocation(eventDate, Location, limit, offset);
+        return eventsDao.findByDateAndLocation(eventDate, Location, 0, 10);
     }
 
     public void createEvent(Events events) {
