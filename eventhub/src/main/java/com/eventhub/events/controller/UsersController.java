@@ -31,8 +31,8 @@ public class UsersController {
     }
 
     @GetMapping("/users/find-user")
-    public ResponseEntity<Users> getUserByEmail(@PathVariable String email) {
-        Users users = usersService.findUserByEmail(email);
+    public ResponseEntity<Users> getUserByEmail(@PathVariable String username) {
+        Users users = usersService.findUserByName(username);
         return (users != null) ? ResponseEntity.ok(users) : ResponseEntity.notFound().build();
     }
 

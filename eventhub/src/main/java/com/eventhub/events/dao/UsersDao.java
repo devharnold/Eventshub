@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface UsersDao {
     Users createUserProfile(Users users);
-    Users findByName(String name);
+    Users findByName(String username);
     List<Users> findAll();
     //Users login(String userId);
 }

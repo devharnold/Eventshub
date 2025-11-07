@@ -23,7 +23,7 @@ public class UsersService {
         return usersDao.findAll();
     }
 
-    public Users findUserByEmail(String username) {
+    public Users findUserByName(String username) {
         return usersDao.findByName(username);
     }
 }
