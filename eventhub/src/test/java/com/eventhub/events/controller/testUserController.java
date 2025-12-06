@@ -43,4 +43,15 @@ public class testUserController {
         assertEquals("mockUsername", response.getBody(). getUsername());
     }
 
+    @Test
+    void testGetUsers_AllUsers() {
+        List<Users> mockUsers = Arrays.asList(new Users(), new Users());
+        when(usersDao.findAll()).thenReturn(mockUsers);
+
+        ResponseEntity<List<Users>> response = usersController.listUsers();
+
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(2, response.getBody().size());
+    }
+
 }
