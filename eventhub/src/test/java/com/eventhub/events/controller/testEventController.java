@@ -70,7 +70,7 @@ public class testEventController {
     @Test
     void testGetEvents_ByDateAndLocation() {
         List<Events> mockEvents = Arrays.asList(new Events());
-        when(eventsDao.findByDateAndLocation("Nairobi", "2025-11-06")).thenReturn(mockEvents);
+        when(eventsDao.findByDateAndLocation("Nairobi", "2025-11-06", 0, 10)).thenReturn(mockEvents);
 
         ResponseEntity<List<Events>> response = eventsController.getEvents("Nairobi", "2025-11-06");
 

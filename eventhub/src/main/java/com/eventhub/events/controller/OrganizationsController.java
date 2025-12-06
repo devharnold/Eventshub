@@ -25,7 +25,7 @@ public class OrganizationsController {
 
     @PostMapping("/organizations/new-organization")
     public ResponseEntity<Organizations> createOrganization (@RequestBody Organizations organization) {
-        Organizations created = organizationsService.createOrganization(organization);
+        Organizations created = organizationsService.createOrganizationProfile(organization);
         return ResponseEntity.ok(created);
     }
 
