@@ -5,6 +5,6 @@ import java.util.List;
 
 public interface PaymentDao {
     void save(Payment payment);
-    Payment findByTransactionId(String transactionId);
+    Payment findByPaymentRef(String paymentRef);
     List<Payment> findAll();
 }
