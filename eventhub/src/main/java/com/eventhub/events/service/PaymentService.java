@@ -6,15 +6,32 @@ import com.eventhub.events.model.Payment;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+ // Added fresh imports
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import org.json.JSONObject;
+
+import java.nio.charset.StandardCharsets;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+//
+
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Map;
+
 
 @Service
 public class PaymentService {
 
     private final Mpesa mpesa;
     private final PaymentDao paymentDao;
+    private final String appSecret;
+    private final String appKey;
+    private static final Logger log = LoggerFactory.getLogger(PaymentService.class);
 
     @Value("${mpesa.businessShortCode}")
     private String businessShortCode;
@@ -32,8 +49,45 @@ public class PaymentService {
             @Value("${mpesa.appKey}") String appKey,
             @Value("${mpesa.appSecret}") String appSecret,
             PaymentDao paymentDao) {
+
+        this.appKey = appKey;
+        this.appSecret = appSecret;
         this.mpesa = new Mpesa(appKey, appSecret);
         this.paymentDao = paymentDao;
+    }
+
+    public String authenticate() throws IOException {
+
+        String credentials = appKey + ":" + appSecret;
+        // byte[] bytes = appKeySecret.getBytes("ISO-8859-1");
+        String encoded = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.ISO_8859_1));
+
+
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials")
+                .get()
+                .addHeader("authorization", "Basic "+encoded)
+                .addHeader("cache-control", "no-cache")
+
+                .build();
+
+        try(Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful() || response.body() == null) {
+                String errorBody = response.body() != null ? response.body().string() : "empty body";
+
+                log.error(
+                        "Mpesa OAUTH Failure! | HTTP {} | Message: {} | Body: {}",
+                        response.code(),
+                        response.message(),
+                        errorBody
+                );
+                throw new IOException("Failed to authenticate with Mpesa: " + response);
+            }
+            JSONObject jsonObject=new JSONObject(response.body().string());
+            return jsonObject.getString("access_token");
+        }
     }
 
     public String initiateSTKPush(String phoneNumber, String amount, String accountRef) throws IOException {
@@ -88,7 +142,7 @@ public class PaymentService {
         payment.setTransactionId(transactionId);
         payment.setAmount(amount);
         payment.setPhone(phone);
-        payment.setReference(ref);
+        payment.setPaymentRef(ref);
 
         paymentDao.save(payment);
     }

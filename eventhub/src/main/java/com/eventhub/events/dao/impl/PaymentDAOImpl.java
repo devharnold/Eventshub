@@ -34,7 +34,7 @@ public class PaymentDAOImpl implements PaymentDao {
             stmt.setString(1, payment.getTransactionId());
             stmt.setString(2, payment.getAmount());
             stmt.setString(3, payment.getPhone());
-            stmt.setString(4, payment.getReference());
+            stmt.setString(4, payment.getPaymentRef());
             stmt.setTimestamp(5, Timestamp.valueOf(payment.getCreatedAt()));
 
             int rows = stmt.executeUpdate();
@@ -49,7 +49,7 @@ public class PaymentDAOImpl implements PaymentDao {
     }
 
     @Override
-    public Payment findByTransactionId(String transactionId) {
+    public Payment findByPaymentRef(String transactionId) {
         String sql = "SELECT * FROM payments WHERE transaction_id = ?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -92,7 +92,7 @@ public class PaymentDAOImpl implements PaymentDao {
         payment.setTransactionId(rs.getString("transactionId"));
         payment.setAmount(rs.getString("amount"));  // amount as String
         payment.setPhone(rs.getString("phone"));
-        payment.setReference(rs.getString("reference"));
+        payment.setPaymentRef(rs.getString("paymentRef"));
         payment.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         return payment;
     }

@@ -8,7 +8,7 @@ public class Payment {
     private String transactionId;
     private String amount;
     private String phone;
-    private String reference;
+    private String paymentRef;
     private LocalDateTime createdAt;
 
     public Payment() {
@@ -27,8 +27,8 @@ public class Payment {
     public String getPhone() { return phone;}
     public void setPhone(String phone) { this.phone = phone;}
 
-    public String getReference() { return reference;}
-    public void setReference(String reference) { this.reference = reference;}
+    public String getPaymentRef() { return paymentRef;}
+    public void setPaymentRef(String reference) { this.paymentRef = paymentRef;}
 
     public LocalDateTime getCreatedAt() { return createdAt;}
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt;}
