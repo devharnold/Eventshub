@@ -1,6 +1,5 @@
 package com.eventhub.events.dao.impl;
 
-
 import java.sql.*;
 import java.util.*;
 import javax.sql.DataSource;
