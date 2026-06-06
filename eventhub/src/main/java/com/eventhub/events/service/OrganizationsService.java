@@ -16,7 +16,7 @@ public class OrganizationsService {
         this.organizationsDao = organizationsDao;
     }
 
-    public void createOrganization(Organizations organization) {
+    public void createOrganizationProfile(Organizations organization) {
         organizationsDao.createOrganizationProfile(organization);
     }
 
