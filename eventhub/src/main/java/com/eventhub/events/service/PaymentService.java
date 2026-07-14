@@ -126,6 +126,14 @@ public class PaymentService {
         );
     }
 
+    public Payment findByPaymentRef(String transactionId) {
+        Payment payment = paymentDao.findByPaymentRef(transactionId);
+        if (payment == null) {
+            log.warn("No payment found for transactionId: {}", transactionId);
+        }
+        return payment;
+    }
+
     public boolean confirmPayment(String checkoutRequestId) throws IOException {
         String response = checkSTKStatus(checkoutRequestId);
         return response.contains("Success");
