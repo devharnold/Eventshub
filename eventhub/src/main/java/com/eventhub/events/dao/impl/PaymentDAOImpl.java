@@ -23,22 +23,23 @@ public class PaymentDAOImpl implements PaymentDao {
     @Override
     public void save(Payment payment) {
         String sql = "INSERT INTO payments (transaction_id, amount, phone, reference, created_at) VALUES (?, ?, ?, ?, ?)";
-
         if (payment.getCreatedAt() == null) {
             payment.setCreatedAt(LocalDateTime.now());
         }
-
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, payment.getTransactionId());
             stmt.setString(2, payment.getAmount());
             stmt.setString(3, payment.getPhone());
             stmt.setString(4, payment.getPaymentRef());
             stmt.setTimestamp(5, Timestamp.valueOf(payment.getCreatedAt()));
-
             int rows = stmt.executeUpdate();
             if (rows > 0) {
+                try (ResultSet keys = stmt.getGeneratedKeys()) {
+                    if (keys.next()) {
+                        payment.setPaymentId(String.valueOf(keys.getLong(1)));
+                    }
+                }
                 logger.info("Payment saved: {}", payment.getTransactionId());
             } else {
                 logger.warn("Failed to save payment: {}", payment.getTransactionId());
@@ -88,11 +89,11 @@ public class PaymentDAOImpl implements PaymentDao {
 
     private Payment mapRow(ResultSet rs) throws SQLException {
         Payment payment = new Payment();
-        payment.setPaymentId(rs.getString("paymentId"));  // id as String
-        payment.setTransactionId(rs.getString("transactionId"));
-        payment.setAmount(rs.getString("amount"));  // amount as String
+        payment.setPaymentId(rs.getString("payment_id"));
+        payment.setTransactionId(rs.getString("transaction_id"));
+        payment.setAmount(rs.getString("amount"));
         payment.setPhone(rs.getString("phone"));
-        payment.setPaymentRef(rs.getString("paymentRef"));
+        payment.setPaymentRef(rs.getString("reference"));
         payment.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         return payment;
     }
