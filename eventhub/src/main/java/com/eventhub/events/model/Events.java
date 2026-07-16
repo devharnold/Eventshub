@@ -4,10 +4,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Events {
-    private String eventId;
+    private Integer eventId;
     private String eventName;
-    private String eventOrganizer;
-    private String Location;
+    private Integer organizationId;
+    private String location;
     private LocalDate eventDate;
     private String eventDuration;
     private Double price;
@@ -21,17 +21,17 @@ public class Events {
     }
 
     // Getters and Setters
-    public String getEventId() { return eventId; }
-    public void setEventId(String eventId) { this.eventId = this.eventId; }
+    public Integer getEventId() { return eventId; }
+    public void setEventId(Integer eventId) { this.eventId = eventId; }
 
     public String getEventName() { return eventName; }
     public void setEventName(String eventName) { this.eventName = eventName; }
 
-    public String getEventOrganizer() { return eventOrganizer; }
-    public void setEventOrganizer(String eventOrganizer) { this.eventOrganizer = eventOrganizer; }
+    public Integer getOrganizationId() { return organizationId; }
+    public void setOrganizationId(Integer organizationId) { this.organizationId = organizationId; }
 
-    public String getEventLocation() { return Location; }
-    public void setEventLocation(String location) { this.Location = location; }
+    public String getEventLocation() { return location; }
+    public void setEventLocation(String location) { this.location = location; }
 
     public LocalDate getEventDate() { return eventDate; }
     public void setEventDate( LocalDate eventDate ) { this.eventDate = eventDate; }

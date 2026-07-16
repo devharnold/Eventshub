@@ -2,21 +2,22 @@ package com.eventhub.events.dao.impl;
 
 import com.eventhub.events.dao.EventsDao;
 import com.eventhub.events.model.Events;
-import com.eventhub.events.utils.UniqueIdGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class EventsDaoImpl implements EventsDao {
 
+    private static final Logger logger =
+            LoggerFactory.getLogger(EventsDaoImpl.class);
+
     private final DataSource dataSource;
-    private static final Logger logger = LoggerFactory.getLogger(EventsDaoImpl.class);
 
     public EventsDaoImpl(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -24,66 +25,140 @@ public class EventsDaoImpl implements EventsDao {
 
     @Override
     public Events createEvent(Events event) {
-        String insert_query = "INSERT INTO events (eventId, eventName, eventOrganizer, location, eventDate, eventDuration, createdAt, updatedAt) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        String generatedId = UniqueIdGenerator.generateUniqueId();
-        event.setEventId(generatedId);
+        String sql = """
+                INSERT INTO events
+                (event_name,
+                 organization_id,
+                 location,
+                 event_date,
+                 event_duration,
+                 price,
+                 created_at,
+                 updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                RETURNING id
+                """;
 
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(insert_query)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, event.getEventId());
-            stmt.setString(2, event.getEventName());
-            stmt.setString(3, event.getEventOrganizer());
-            stmt.setString(4, event.getEventLocation()); // swapped with duration
-            stmt.setDate(5, java.sql.Date.valueOf(event.getEventDate())); // LocalDate
-            stmt.setString(6, event.getEventDuration());
-            stmt.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
-            stmt.setTimestamp(8, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setString(1, event.getEventName());
+            stmt.setInt(2, event.getOrganizationId());
+            stmt.setString(3, event.getEventLocation());
+            stmt.setDate(4, Date.valueOf(event.getEventDate()));
+            stmt.setString(5, event.getEventDuration());
+            stmt.setDouble(6, event.getPrice());
+            stmt.setTimestamp(7, Timestamp.valueOf(event.getCreatedDate()));
+            stmt.setTimestamp(8, Timestamp.valueOf(event.getUpdatedDate()));
 
-            int rowsInserted = stmt.executeUpdate();
-            if (rowsInserted > 0) {
-                logger.info("Event created successfully with ID: " + generatedId);
-            } else {
-                logger.warn("Event insert returned 0 rows.");
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    event.setEventId(rs.getInt("id"));
+                }
             }
 
+            logger.info("Created event {}", event.getEventId());
+
         } catch (SQLException e) {
-            logger.error("Error while creating event", e);
+            logger.error("Failed to create event", e);
         }
+
         return event;
     }
 
-
     @Override
-    public Events findByName(String eventName) {
-        String query = "SELECT * FROM events WHERE eventName = ?";
-        try (Connection conn = dataSource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(query)) {
+    public Events findById(Integer eventId) {
 
-            stmt.setString(1, eventName);
+        String sql = "SELECT * FROM events WHERE id = ?";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, eventId);
+
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return mapRow(rs);
                 }
             }
+
         } catch (SQLException e) {
-            logger.error("Error while executing query", e);
+            logger.error("Error finding event {}", eventId, e);
         }
+
         return null;
     }
 
     @Override
-    public List<Events> findByDateAndLocation(String eventDate, String Location, int limit, int offset) {
-        List<Events> events = new ArrayList<>();
-        String query = "SELECT * FROM events WHERE eventDate = ? AND eventLocation = ? ORDER BY eventDate LIMIT ? OFFSET ?";
+    public Events findByName(String eventName) {
+
+        String sql = "SELECT * FROM events WHERE event_name = ?";
 
         try (Connection conn = dataSource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(query)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setDate(1, java.sql.Date.valueOf(eventDate));
-            stmt.setString(2, Location);
+            stmt.setString(1, eventName);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapRow(rs);
+                }
+            }
+
+        } catch (SQLException e) {
+            logger.error("Error finding event {}", eventName, e);
+        }
+
+        return null;
+    }
+
+    @Override
+    public List<Events> findAll() {
+
+        List<Events> events = new ArrayList<>();
+
+        String sql = "SELECT * FROM events ORDER BY event_date";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                events.add(mapRow(rs));
+            }
+
+        } catch (SQLException e) {
+            logger.error("Error retrieving events", e);
+        }
+
+        return events;
+    }
+
+    @Override
+    public List<Events> findByDateAndLocation(
+            String eventDate,
+            String location,
+            int limit,
+            int offset) {
+
+        List<Events> events = new ArrayList<>();
+
+        String sql = """
+                SELECT *
+                FROM events
+                WHERE event_date = ?
+                AND location = ?
+                ORDER BY event_date
+                LIMIT ?
+                OFFSET ?
+                """;
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setDate(1, Date.valueOf(eventDate));
+            stmt.setString(2, location);
             stmt.setInt(3, limit);
             stmt.setInt(4, offset);
 
@@ -92,56 +167,28 @@ public class EventsDaoImpl implements EventsDao {
                     events.add(mapRow(rs));
                 }
             }
+
         } catch (SQLException e) {
-            logger.error("Error while executing query", e);
+            logger.error("Error retrieving events", e);
         }
-        //return events.isEmpty() ? null : events.get(0);
+
         return events;
-    }
-
-    @Override
-    public List<Events> findAll() {
-        String query = "SELECT * FROM events";
-        List<Events> events = new ArrayList<>();
-        try (Connection conn = dataSource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(query);
-            ResultSet rs = stmt.executeQuery(query)) {
-
-            while (rs.next()) {
-                events.add(mapRow(rs));
-            }
-        } catch (SQLException e) {
-            logger.error("Error while executing query", e);
-        }
-        return events;
-    }
-
-    @Override
-    public Events findById(String eventId) {
-        String query = "SELECT * FROM events WHERE eventId = ?";
-        try (Connection conn = dataSource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setString(1, eventId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return mapRow(rs);
-                }
-            }
-        } catch (SQLException e) {
-            logger.error("Error while trying to search for an event by its ID: {}", eventId, e);
-        }
-        return null;
     }
 
     private Events mapRow(ResultSet rs) throws SQLException {
-        Events events = new Events();
-        events.setEventId(rs.getString("eventId"));
-        events.setEventName(rs.getString("eventName"));
-        events.setEventOrganizer(rs.getString("eventOrganizer"));
-        events.setEventLocation(rs.getString("eventLocation"));
-        events.setEventDate(rs.getDate("eventDate").toLocalDate());
-        events.setPrice(rs.getDouble("eventPrice"));
-        return new Events();
+
+        Events event = new Events();
+
+        event.setEventId(rs.getInt("id"));
+        event.setEventName(rs.getString("event_name"));
+        event.setOrganizationId(rs.getInt("organization_id"));
+        event.setEventLocation(rs.getString("location"));
+        event.setEventDate(rs.getDate("event_date").toLocalDate());
+        event.setEventDuration(rs.getString("event_duration"));
+        event.setPrice(rs.getDouble("price"));
+        event.setCreatedDate(rs.getTimestamp("created_at").toLocalDateTime());
+        event.setUpdatedDate(rs.getTimestamp("updated_at").toLocalDateTime());
+
+        return event;
     }
 }

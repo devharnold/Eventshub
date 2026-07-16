@@ -28,7 +28,7 @@ public class testUserController {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         usersService = spy(new UsersService(usersDao));
-        usersController = new UsersController(usersDao);
+        usersController = new UsersController(usersService);
     }
 
     @Test

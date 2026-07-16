@@ -29,7 +29,7 @@ public class testOrgController {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         organizationsService = spy(new OrganizationsService(organizationsDao));
-        organizationsController = new OrganizationsController(organizationsDao);
+        organizationsController = new OrganizationsController(organizationsService);
     }
 
     @Test

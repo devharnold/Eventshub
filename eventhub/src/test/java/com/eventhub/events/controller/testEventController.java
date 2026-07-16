@@ -28,7 +28,7 @@ public class testEventController {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         eventsService = spy(new EventsService(eventsDao));
-        eventsController = new EventsController(eventsDao);
+        eventsController = new EventsController(eventsService);
     }
 
     @Test

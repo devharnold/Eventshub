@@ -3,7 +3,7 @@ package com.eventhub.events.model;
 import java.time.LocalDateTime;
 
 public class Users {
-    private String userId;
+    private Integer userId;
     private String email;
     private String username;
     private String firstName;
@@ -18,8 +18,8 @@ public class Users {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public String getUserId() { return this.userId; }
-    public void setUserId(String userId) { this.userId = userId; }
+    public Integer getUserId() { return this.userId; }
+    public void setUserId(Integer userId) { this.userId = userId; }
 
     public String getEmail() { return this.email; }
     public void setEmail(String email) { this.email = email; }

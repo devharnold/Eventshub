@@ -2,95 +2,136 @@ package com.eventhub.events.dao.impl;
 
 import com.eventhub.events.dao.UsersDao;
 import com.eventhub.events.model.Users;
-import com.eventhub.events.utils.UniqueIdGenerator;
+import com.eventhub.events.utils.PasswordHash;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.*;
-
-import com.eventhub.events.utils.PasswordHash;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class UsersDaoImpl implements UsersDao {
+
+    private static final Logger logger =
+            LoggerFactory.getLogger(UsersDaoImpl.class);
+
     private final DataSource dataSource;
-    private static final Logger logger = LoggerFactory.getLogger(UsersDaoImpl.class);
 
     public UsersDaoImpl(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
     @Override
-    public Users createUserProfile(Users users) {
-        String insert_query = "INSERT INTO users (userId, username, email, phone, password)" +  " VALUES (?, ?, ?, ?, ?)";
-        String generatedId = UniqueIdGenerator.generateUniqueId();
-        users.setUserId(generatedId);
+    public Users createUserProfile(Users user) {
 
-        String plainPassword = users.getPassword();
-        String hashedPassword = PasswordHash.hashPassword(plainPassword);
-        users.setPassword(hashedPassword);
+        String sql = """
+                INSERT INTO users
+                (
+                    username,
+                    email,
+                    first_name,
+                    last_name,
+                    phone_number,
+                    password,
+                    created_at,
+                    updated_at
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                RETURNING id
+                """;
+
+        String hashedPassword = PasswordHash.hashPassword(user.getPassword());
+        user.setPassword(hashedPassword);
 
         try (Connection conn = dataSource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(insert_query)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, users.getUserId());
-            stmt.setString(2, users.getUsername());
-            stmt.setString(3, users.getEmail());
-            stmt.setString(4, users.getPhoneNumber());
-            stmt.setString(5, users.getPassword());
+            stmt.setString(1, user.getUsername());
+            stmt.setString(2, user.getEmail());
+            stmt.setString(3, user.getFirstName());
+            stmt.setString(4, user.getLastName());
+            stmt.setString(5, user.getPhoneNumber());
+            stmt.setString(6, user.getPassword());
+            stmt.setTimestamp(7, Timestamp.valueOf(user.getCreatedAt()));
+            stmt.setTimestamp(8, Timestamp.valueOf(user.getUpdatedAt()));
 
-            int rowsInserted = stmt.executeUpdate();
-            if (rowsInserted > 0) {
-                logger.info("Created user profile with ID: " + generatedId);
-            } else {
-                logger.warn("User insert_query failed");
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    user.setUserId(rs.getInt("id"));
+                }
             }
+
+            logger.info("Created user {}", user.getUsername());
+
         } catch (SQLException e) {
-            logger.error("Error while creating user profile", e);
+            logger.error("Error creating user", e);
         }
-        return users;
+
+        return user;
     }
 
     @Override
     public Users findByName(String username) {
-        String query = "SELECT * FROM users WHERE username = ?";
+
+        String sql = "SELECT * FROM users WHERE username = ?";
+
         try (Connection conn = dataSource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(query)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, username);
+
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return mapRow(rs);
                 }
             }
+
         } catch (SQLException e) {
-            logger.error("Error while trying to find user", e);
+            logger.error("Error finding user {}", username, e);
         }
+
         return null;
     }
 
     @Override
     public List<Users> findAll() {
+
         List<Users> users = new ArrayList<>();
-        String query = "SELECT username FROM users WHERE event = ?";
+
+        String sql = "SELECT * FROM users ORDER BY username";
 
         try (Connection conn = dataSource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(query)) {
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
-            try (ResultSet rs = stmt.executeQuery()) {
-                while(rs.next()) {
-                    users.add(mapRow(rs));
-                }
+            while (rs.next()) {
+                users.add(mapRow(rs));
             }
+
         } catch (SQLException e) {
-            logger.error("Error while executing query", e);
+            logger.error("Error retrieving users", e);
         }
+
         return users;
     }
 
     private Users mapRow(ResultSet rs) throws SQLException {
-        return new Users();
+
+        Users user = new Users();
+
+        user.setUserId(rs.getInt("id"));
+        user.setUsername(rs.getString("username"));
+        user.setEmail(rs.getString("email"));
+        user.setFirstName(rs.getString("first_name"));
+        user.setLastName(rs.getString("last_name"));
+        user.setPhoneNumber(rs.getString("phone_number"));
+        user.setPassword(rs.getString("password"));
+        user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        user.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+
+        return user;
     }
 }
