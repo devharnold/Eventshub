@@ -2,7 +2,7 @@ package com.eventhub.events.controller;
 
 import java.util.List;
 
-import com.eventhub.events.dao.UsersDao;
+
 import com.eventhub.events.model.Users;
 import com.eventhub.events.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,23 +20,23 @@ public class UsersController {
     private final UsersService usersService;
 
     @Autowired
-    public UsersController(UsersDao usersDao) {
-        this.usersService = new UsersService(usersDao);
+    public UsersController(UsersService usersService) {
+        this.usersService = usersService;
     }
 
-    @PostMapping("/users/create_profile")
+    @PostMapping()
     public ResponseEntity<Users> createUser (@RequestBody Users users) {
         usersService.createNewUser(users);
         return ResponseEntity.ok(users);
     }
 
-    @GetMapping("/users/find-user")
+    @GetMapping("/{username}")
     public ResponseEntity<Users> getUserByName(@PathVariable String username) {
         Users users = usersService.findUserByName(username);
         return (users != null) ? ResponseEntity.ok(users) : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/users/list-users")
+    @GetMapping()
     public ResponseEntity<List<Users>> listUsers() {
         return ResponseEntity.ok(usersService.findAllUsers());
     }

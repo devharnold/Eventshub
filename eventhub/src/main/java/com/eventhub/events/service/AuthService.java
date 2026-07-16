@@ -3,23 +3,32 @@ package com.eventhub.events.service;
 import com.eventhub.events.dao.UsersDao;
 import com.eventhub.events.model.Users;
 import com.eventhub.events.utils.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.eventhub.events.utils.PasswordHash;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
 
-    @Autowired
-    private UsersDao usersDao;
+    private final UsersDao usersDao;
+    private final JwtUtil jwtUtil;
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    public AuthService(UsersDao usersDao, JwtUtil jwtUtil) {
+        this.usersDao = usersDao;
+        this.jwtUtil = jwtUtil;
+    }
 
     public String login(String username, String password) {
+
         Users user = usersDao.findByName(username);
-        if (user != null && user.getPassword().equals(password)) {
-            return jwtUtil.generateToken(user);
+
+        if (user == null) {
+            throw new RuntimeException("Invalid username or password.");
         }
-        throw new RuntimeException("Invalid User Credentials");
+
+        if (!PasswordHash.verifyPassword(password, user.getPassword())) {
+            throw new RuntimeException("Invalid username or password.");
+        }
+
+        return jwtUtil.generateToken(user);
     }
 }

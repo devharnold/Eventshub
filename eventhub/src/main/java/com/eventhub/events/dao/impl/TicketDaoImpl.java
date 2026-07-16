@@ -1,25 +1,30 @@
 package com.eventhub.events.dao.impl;
 
+import com.eventhub.events.dao.TicketDao;
+import com.eventhub.events.model.Ticket;
+import com.eventhub.events.utils.QRCodegenerator;
+import com.eventhub.events.utils.TicketNumberGen;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
+
+import javax.imageio.ImageIO;
+import javax.sql.DataSource;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.*;
-import java.util.*;
-import javax.imageio.ImageIO;
-import javax.sql.DataSource;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.eventhub.events.model.Ticket;
-import com.eventhub.events.dao.TicketDao;
-import com.eventhub.events.utils.QRCodegenerator;
-import com.eventhub.events.utils.TicketNumberGen;
-import org.springframework.stereotype.Repository;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
-public class TicketDaoImpl implements TicketDao{
+public class TicketDaoImpl implements TicketDao {
+
+    private static final Logger logger =
+            LoggerFactory.getLogger(TicketDaoImpl.class);
+
     private final DataSource dataSource;
-    private final Logger logger = LoggerFactory.getLogger(TicketDaoImpl.class);
 
     public TicketDaoImpl(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -27,58 +32,102 @@ public class TicketDaoImpl implements TicketDao{
 
     @Override
     public Ticket createTicket(Ticket ticket) {
-        String insert_query = "INSERT INTO tickets(ticketNumber, eventDate, eventName, organizationName)" + "VALUES (?, ?, ?, ?)";
-        String generatedTicketNumber = TicketNumberGen.generateTicketNumber();
-        ticket.setTicketNumber(generatedTicketNumber);
 
-        try(Connection conn = dataSource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(insert_query)) {
+        String sql = """
+                INSERT INTO tickets
+                (
+                    ticket_number,
+                    user_id,
+                    event_id,
+                    qr_code,
+                    issued_at,
+                    status
+                )
+                VALUES (?, ?, ?, ?, ?, ?)
+                RETURNING id
+                """;
 
-            stmt.setString(1, ticket.getTicketNumber());
-            stmt.setTimestamp(2, Timestamp.valueOf(ticket.getEventDate()));
-            stmt.setString(3, ticket.getEventName());
-            stmt.setString(4, ticket.getOrganizationName());
+        ticket.setTicketNumber(TicketNumberGen.generateTicketNumber());
+        ticket.setIssuedAt(LocalDateTime.now());
+        ticket.setStatus("ACTIVE");
 
-            int rowsInserted = stmt.executeUpdate();
-            if (rowsInserted > 0) {
-                logger.info("Created a ticket! User should provide the ticket at the venue");
+        try {
 
-                BufferedImage qrImage = QRCodegenerator.generateTicketQRCode(
-                        ticket.getUsername(),
-                        ticket.getEventName(),
-                        ticket.getOrganizationName(),
-                        ticket.getEventDate()
-                );
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ImageIO.write(qrImage, "png", baos);
-                byte[] qrBytes = baos.toByteArray();
-                ticket.setQrCode(qrBytes);
+            BufferedImage qrImage = QRCodegenerator.generateTicketQRCode(
+                    ticket.getUsername(),
+                    ticket.getEventName(),
+                    ticket.getOrganizationName(),
+                    ticket.getEventDate()
+            );
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(qrImage, "png", baos);
+
+            byte[] qrBytes = baos.toByteArray();
+            ticket.setQrCode(qrBytes);
+
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
 
                 stmt.setString(1, ticket.getTicketNumber());
-                stmt.setTimestamp(2, Timestamp.valueOf(ticket.getEventDate()));
-                stmt.setString(3, ticket.getEventName());
-                stmt.setString(4, ticket.getOrganizationName());
-                stmt.setBytes(5, qrBytes);
-            } else {
-                logger.warn("Failed to create a ticket!");
+                stmt.setInt(2, ticket.getUserId());
+                stmt.setInt(3, ticket.getEventId());
+                stmt.setBytes(4, qrBytes);
+                stmt.setTimestamp(5, Timestamp.valueOf(ticket.getIssuedAt()));
+                stmt.setString(6, ticket.getStatus());
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        ticket.setId(rs.getInt("id"));
+                    }
+                }
+
+                logger.info("Created ticket {}", ticket.getTicketNumber());
+
             }
+
         } catch (SQLException e) {
-            logger.error("Error while creating the ticket!", e);
+            logger.error("Error creating ticket", e);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error generating QR code", e);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unexpected error while creating ticket", e);
         }
+
         return ticket;
     }
 
     @Override
     public List<Ticket> getTickets(int userId) {
-        List<Ticket> tickets = new ArrayList<>();
-        String fetch_query = "SELECT * FROM tickets WHERE user_id = ?";
 
-        try(Connection conn = dataSource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(fetch_query)) {
+        List<Ticket> tickets = new ArrayList<>();
+
+        String sql = """
+                SELECT
+                    t.id,
+                    t.ticket_number,
+                    t.user_id,
+                    t.event_id,
+                    t.qr_code,
+                    t.issued_at,
+                    t.status,
+                    u.username,
+                    e.event_name,
+                    e.event_date,
+                    o.organization_name
+                FROM tickets t
+                JOIN users u
+                    ON t.user_id = u.id
+                JOIN events e
+                    ON t.event_id = e.id
+                JOIN organizations o
+                    ON e.organization_id = o.id
+                WHERE t.user_id = ?
+                ORDER BY t.issued_at DESC
+                """;
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, userId);
 
@@ -87,20 +136,32 @@ public class TicketDaoImpl implements TicketDao{
                     tickets.add(mapRow(rs));
                 }
             }
+
         } catch (SQLException e) {
-            logger.error("Error occurred while trying to fetch tickets for user {}", userId, e);
+            logger.error("Error retrieving tickets for user {}", userId, e);
         }
+
         return tickets;
     }
 
     private Ticket mapRow(ResultSet rs) throws SQLException {
+
         Ticket ticket = new Ticket();
-        ticket.setTicketNumber(rs.getString("ticketNumber"));
-        ticket.setUsername(rs.getString("username"));
-        ticket.setEventDate(rs.getTimestamp("eventDate").toLocalDateTime());
-        ticket.setEventName(rs.getString("eventName"));
-        ticket.setOrganizationName(rs.getString("organizationName"));
+
+        ticket.setId(rs.getInt("id"));
+        ticket.setTicketNumber(rs.getString("ticket_number"));
+        ticket.setUserId(rs.getInt("user_id"));
+        ticket.setEventId(rs.getInt("event_id"));
         ticket.setQrCode(rs.getBytes("qr_code"));
+        ticket.setIssuedAt(rs.getTimestamp("issued_at").toLocalDateTime());
+        ticket.setStatus(rs.getString("status"));
+
+        // Display fields
+        ticket.setUsername(rs.getString("username"));
+        ticket.setEventName(rs.getString("event_name"));
+        ticket.setEventDate(rs.getDate("event_date").toLocalDate().atStartOfDay());
+        ticket.setOrganizationName(rs.getString("organization_name"));
+
         return ticket;
     }
 }

@@ -3,7 +3,7 @@ package com.eventhub.events.model;
 import java.time.LocalDateTime;
 
 public class Organizations {
-    private String organizationId;
+    private Integer organizationId;
     private String organizationName;
     private String email1;
     private String email2;
@@ -16,8 +16,8 @@ public class Organizations {
     }
 
     // Getters and Setters
-    public String getOrganizationId() { return organizationId; }
-    public void setOrganizationId(String organizationId) { this.organizationId = organizationId; }
+    public Integer getOrganizationId() { return organizationId; }
+    public void setOrganizationId(Integer organizationId) { this.organizationId = organizationId; }
 
     public String getOrganizationName() { return organizationName; }
     public void setOrganizationName(String organizationName) { this.organizationName = organizationName; }

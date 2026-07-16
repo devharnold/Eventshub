@@ -10,5 +10,5 @@ public interface EventsDao {
     Events findByName(String eventName);
     List<Events> findByDateAndLocation(String eventDate, String Location, int limit, int offset);
     List<Events> findAll();
-    Events findById(String eventId);
+    Events findById(Integer eventId);
 }

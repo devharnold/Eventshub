@@ -16,7 +16,7 @@ public class EventsService {
         this.eventsDao = eventsDao;
     }
 
-    public Events getEventById(String eventId) {
+    public Events getEventById(Integer eventId) {
         return eventsDao.findById(eventId);
     }
 
@@ -36,11 +36,13 @@ public class EventsService {
         eventsDao.createEvent(events);
     }
 
-    public boolean isEventFree(String eventId) {
+    public boolean isEventFree(Integer eventId) {
         Events events = eventsDao.findById(eventId);
-        if (events != null) {
-            return Double.compare(events.getPrice(), 0.0) <= 0;
+        if (events == null) {
+            throw new IllegalArgumentException(
+                    "Event not found with id: " + events
+            );
         }
-        return false;
+        return events.getPrice() <= 0;
     }
 }

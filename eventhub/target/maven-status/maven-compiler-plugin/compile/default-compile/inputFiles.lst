@@ -35,7 +35,6 @@
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/service/TicketService.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/utils/UniqueIdGenerator.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/service/PaymentFailedException.java
-/home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/model/Booking.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/dao/PaymentDao.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/dao/impl/TicketDaoImpl.java
 /home/henry-arnold/IdeaProjects/Eventshub/eventhub/src/main/java/com/eventhub/events/dao/impl/UsersDaoImpl.java

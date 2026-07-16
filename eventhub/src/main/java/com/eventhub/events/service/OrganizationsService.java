@@ -17,7 +17,7 @@ public class OrganizationsService {
     }
 
     public void createOrganizationProfile(Organizations organization) {
-        organizationsDao.createOrganizationProfile(organization);
+       organizationsDao.createOrganizationProfile(organization);
     }
 
     public Organizations findOrganizationByName(String organizationName) {

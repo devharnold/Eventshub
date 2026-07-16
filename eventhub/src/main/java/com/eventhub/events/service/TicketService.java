@@ -1,41 +1,32 @@
 package com.eventhub.events.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import com.eventhub.events.dto.TicketDTO;
-import com.eventhub.events.model.Events;
-import com.eventhub.events.model.Ticket;
 import com.eventhub.events.dao.TicketDao;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.eventhub.events.model.Ticket;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class TicketService {
-    private final TicketDao ticketDao;
-    private final EventsService eventsService;
 
-    @Autowired
-    public TicketService(TicketDao ticketDao, EventsService eventsService) {
+    private final TicketDao ticketDao;
+
+    public TicketService(TicketDao ticketDao) {
         this.ticketDao = ticketDao;
-        this.eventsService = eventsService;
     }
 
-    public Ticket createTicket(String userId, String eventId) {
-        Events events = eventsService.getEventById(eventId);
-        // Build the Ticket entity
-        Ticket ticket = new Ticket();
-        ticket.setTicketNumber(ticket.getTicketNumber());
-        ticket.setUsername(userId);
-        ticket.setEventDate(events.getEventDate().atStartOfDay());
-        ticket.setEventName(events.getEventName());
-        ticket.setOrganizationName(events.getEventOrganizer());
+    public Ticket createTicket(Integer userId, Integer eventId) {
 
-        // Save using DAO (DAO will handle ticket number + QR code)
+        Ticket ticket = new Ticket();
+
+        ticket.setUserId(userId);
+        ticket.setEventId(eventId);
+        ticket.setStatus("VALID");
+
         return ticketDao.createTicket(ticket);
     }
 
-    public List<Ticket> getTicketsForUser(int userId) {
+    public List<Ticket> getTicketsForUser(Integer userId) {
         return ticketDao.getTickets(userId);
     }
 }
